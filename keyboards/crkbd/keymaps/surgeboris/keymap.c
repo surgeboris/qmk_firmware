@@ -25,6 +25,7 @@ enum userspace_layers {
     L_SYM,
     L_MOUSE,
     L_FN,
+    L_LAYERNAV
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -32,7 +33,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     LALT_T(KC_ESC), KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, LALT_T(KC_BSPC),
     LCTL_T(KC_TAB), KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, RCTL_T(KC_QUOT),
     LSFT_T(KC_GRV), KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, RSFT_T(KC_ENT),
-    TG(L_DVORAK), LT(L_SYM, KC_SPC), KC_LGUI, TG(L_MOUSE), LT(L_FN, KC_SPC), KC_RALT
+    OSL(L_LAYERNAV), LT(L_SYM, KC_SPC), KC_LGUI, TG(L_MOUSE), LT(L_FN, KC_SPC), KC_RALT
   ),
   [L_DVORAK] = LAYOUT_split_3x6_3(
     KC_TRNS, KC_QUOT, KC_COMM, KC_DOT, KC_P, KC_Y, KC_F, KC_G, KC_C, KC_R, KC_L, KC_TRNS,
@@ -47,16 +48,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
   ),
   [L_MOUSE] = LAYOUT_split_3x6_3(
-    LALT_T(KC_NLCK), KC_CAPS, KC_SLCK, KC_APP, KC_BTN5, KC_BTN4, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R, KC_PSCR, LALT_T(KC_MPLY),
+    LALT_T(KC_NLCK), KC_CAPS, KC_SLCK, KC_APP, KC_BTN5, KC_BTN4, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R, KC_MUTE, LALT_T(KC_MPLY),
     LCTL_T(KC_PAUS), KC_ACL0, KC_ACL1, KC_ACL2, KC_BTN1, KC_BTN2, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, KC_VOLU, RCTL_T(KC_MNXT),
     LSFT_T(KC_INS), KC_HOME, KC_PGDN, KC_PGUP, KC_END, KC_BTN3, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_VOLD, RSFT_T(KC_MPRV),
-    HYPR(KC_M), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MUTE
+    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, HYPR(KC_M)
   ),
   [L_FN] = LAYOUT_split_3x6_3(
     LALT_T(KC_F1), KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, LALT_T(KC_F12),
-    KC_TRNS, LGUI(KC_1), LGUI(KC_2), LGUI(KC_3), LGUI(KC_4), LGUI(KC_5), KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_BRIU, KC_TRNS,
-    KC_TRNS, LGUI(KC_6), LGUI(KC_7), LGUI(KC_8), LGUI(KC_9), LGUI(KC_0), KC_HOME, KC_PGDN, KC_PGUP, KC_END, KC_BRID, KC_TRNS,
-    RESET, NK_TOGG, LCA(KC_DEL), LCA(KC_INS), KC_TRNS, KC_TRNS
+    KC_TRNS, LGUI(KC_1), LGUI(KC_2), LGUI(KC_3), LGUI(KC_4), LGUI(KC_5), KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, RESET, RCTL_T(KC_BRIU),
+    KC_TRNS, LGUI(KC_6), LGUI(KC_7), LGUI(KC_8), LGUI(KC_9), LGUI(KC_0), KC_HOME, KC_PGDN, KC_PGUP, KC_END, NK_TOGG, RSFT_T(KC_BRID),
+    KC_TRNS, KC_TRNS, LCA(KC_DEL), LCA(KC_INS), KC_TRNS, KC_PSCR
+  ),
+  [L_LAYERNAV] = LAYOUT_split_3x6_3(
+    KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+    KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+    KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+    TO(0), TO(2), TO(1), TO(3), TO(4), KC_NO
   )
 };
 
@@ -76,8 +83,10 @@ void oled_render_layer_state(void) {
         oled_write_P(PSTR("MOUSE"), false);
     } else if (layer_state & (1 << L_SYM)) {
         oled_write_P(PSTR("SYM"), false);
-    } else if (layer_state & (1 << L_DVORAK)) {
+    } else if (layer_state & (1 <<  L_DVORAK)) {
         oled_write_P(PSTR("DVORAK"), false);
+    } else if (layer_state & (1 << L_LAYERNAV)) {
+        oled_write_P(PSTR("LAYERNAV"), false);
     } else {
         oled_write_P(PSTR("QWERTY"), false);
     }
