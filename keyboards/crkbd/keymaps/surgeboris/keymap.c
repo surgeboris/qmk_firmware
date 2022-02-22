@@ -22,8 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 enum userspace_layers {
     L_QWERTY = 0,
     L_DVORAK,
-    L_SYM,
     L_MOUSE,
+    L_SYM,
     L_FN,
     L_LAYERNAV
 };
@@ -41,17 +41,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRNS, KC_SCLN, KC_Q, KC_J, KC_K, KC_X, KC_B, KC_M, KC_W, KC_V, KC_Z, KC_TRNS,
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
   ),
-  [L_SYM] = LAYOUT_split_3x6_3(
-    KC_TRNS, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, LALT_T(KC_DEL),
-    KC_TRNS, KC_UNDS, KC_SLSH, KC_MINS, KC_EQL, KC_PLUS, KC_BSLS, KC_LPRN, KC_RPRN, KC_LCBR, KC_RCBR, KC_TRNS,
-    KC_TRNS, KC_EXLM, KC_AT, KC_HASH, KC_DLR, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LBRC, KC_RBRC, KC_TRNS,
-    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
-  ),
   [L_MOUSE] = LAYOUT_split_3x6_3(
     LALT_T(KC_MPLY), KC_RALT, KC_RCTL, OSM(MOD_HYPR), KC_BTN3, KC_APP, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R, KC_NLCK, LALT_T(KC_MUTE),
     LCTL_T(KC_MNXT), KC_ACL2, KC_ACL1, KC_ACL0, KC_BTN1, KC_BTN2, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, KC_SLCK, RCTL_T(KC_INS),
     LSFT_T(KC_MPRV), KC_RSFT, KC_RGUI, OSM(MOD_MEH), KC_BTN4, KC_BTN5, KC_HOME, KC_PGDN, KC_PGUP, KC_END, KC_CAPS, RSFT_T(KC_PAUS),
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, HYPR(KC_M)
+  ),
+  [L_SYM] = LAYOUT_split_3x6_3(
+    KC_TRNS, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, LALT_T(KC_DEL),
+    KC_TRNS, KC_UNDS, KC_SLSH, KC_MINS, KC_EQL, KC_PLUS, KC_BSLS, KC_LPRN, KC_RPRN, KC_LCBR, KC_RCBR, KC_TRNS,
+    KC_TRNS, KC_EXLM, KC_AT, KC_HASH, KC_DLR, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LBRC, KC_RBRC, KC_TRNS,
+    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
   ),
   [L_FN] = LAYOUT_split_3x6_3(
     LALT_T(KC_F1), KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, LALT_T(KC_F12),
@@ -63,7 +63,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     OSM(MOD_LALT), KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, OSM(MOD_LCTL|MOD_LSFT),
     OSM(MOD_LCTL), KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, OSM(MOD_LSFT|MOD_LALT),
     OSM(MOD_LSFT), KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, NK_TOGG, OSM(MOD_LCTL|MOD_LALT),
-    TO(0), TO(2), TO(1), TO(3), TO(4), RESET
+    TO(L_QWERTY), TO(L_SYM), TO(L_DVORAK), TO(L_MOUSE), TO(L_FN), RESET
   )
 };
 
@@ -77,16 +77,16 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 }
 
 void oled_render_layer_state(void) {
-    if (layer_state & (1 << L_FN)) {
+    if (layer_state & (1 << L_LAYERNAV)) {
+        oled_write_P(PSTR("LAYERNAV"), false);
+    } else if (layer_state & (1 << L_FN)) {
       oled_write_P(PSTR("FN"), false);
-    } else if (layer_state & (1 << L_MOUSE)) {
-        oled_write_P(PSTR("MOUSE"), false);
     } else if (layer_state & (1 << L_SYM)) {
         oled_write_P(PSTR("SYM"), false);
+    } else if (layer_state & (1 << L_MOUSE)) {
+        oled_write_P(PSTR("MOUSE"), false);
     } else if (layer_state & (1 <<  L_DVORAK)) {
         oled_write_P(PSTR("DVORAK"), false);
-    } else if (layer_state & (1 << L_LAYERNAV)) {
-        oled_write_P(PSTR("LAYERNAV"), false);
     } else {
         oled_write_P(PSTR("QWERTY"), false);
     }
