@@ -175,7 +175,7 @@ static uint8_t wheel_unit(void) {
 /*
  * Kinetic movement  acceleration algorithm
  *
- *  current speed = I + A * T/50 + A * 0.5 * T^2 | maximum B
+ *  current speed = I + A * T/50 + A * 0.5 * (T/50)^2 | maximum B
  *
  * T: time since the mouse movement started
  * E: mouse events per second (set through MOUSEKEY_INTERVAL, UHK sends 250, the
@@ -201,11 +201,12 @@ static uint8_t move_unit(void) {
         speed = speed > mk_base_speed ? mk_base_speed : speed;
     }
 
-    /* convert speed to USB mouse speed 1 to 127 */
-    speed = (uint8_t)(speed / (1000.0f / mk_interval));
-    speed = speed < 1 ? 1 : speed;
+    speed = speed > MOUSEKEY_MOVE_MAX ? MOUSEKEY_MOVE_MAX : speed;
 
-    return speed > MOUSEKEY_MOVE_MAX ? MOUSEKEY_MOVE_MAX : speed;
+    /* convert speed to USB mouse speed 1 to 127 */
+    uint8_t result = (uint8_t)((speed / MOUSEKEY_MOVE_MAX) * 127);
+    result = result < 1 ? 1 : result;
+    return result;
 }
 
 static uint8_t wheel_unit(void) {
