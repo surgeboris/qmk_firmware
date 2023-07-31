@@ -22,10 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 enum userspace_layers {
     L_QWERTY = 0,
     L_DVORAK,
+    L_VOICEOVER,
     L_MOUSE,
     L_SYM,
     L_FN,
-    L_LAYERNAV
+    L_LAYERNAV,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -40,6 +41,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRNS, KC_A, KC_O, KC_E, KC_U, KC_I, KC_D, KC_H, KC_T, KC_N, KC_S, RCTL_T(KC_SLSH),
     KC_TRNS, KC_SCLN, KC_Q, KC_J, KC_K, KC_X, KC_B, KC_M, KC_W, KC_V, KC_Z, KC_TRNS,
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+  ),
+  [L_VOICEOVER] = LAYOUT_split_3x6_3(
+    LALT_T(KC_ESC), KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, LALT_T(KC_BSPC),
+    LCTL_T(KC_TAB), KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, RCTL_T(KC_QUOT),
+    LSFT_T(KC_GRV), KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, RSFT_T(KC_ENT),
+    TO(L_QWERTY), LT(L_SYM, KC_SPC), OSM(MOD_LCTL|MOD_LALT), KC_PSCR, LT(L_FN, KC_SPC), KC_RALT
   ),
   [L_MOUSE] = LAYOUT_split_3x6_3(
     KC_TRNS, KC_MNXT, KC_BRIU, KC_BTN5, KC_BTN4, KC_BTN3, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R, KC_VOLU, KC_TRNS,
@@ -61,7 +68,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [L_LAYERNAV] = LAYOUT_split_3x6_3(
     OSM(MOD_LALT), KC_NUM_LOCK, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, OSM(MOD_MEH), OSM(MOD_LCTL|MOD_LSFT),
-    OSM(MOD_LCTL), KC_CAPS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, OSM(MOD_LGUI), OSM(MOD_LSFT|MOD_LALT),
+    OSM(MOD_LCTL), KC_CAPS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, TO(L_VOICEOVER), OSM(MOD_LGUI), OSM(MOD_LSFT|MOD_LALT),
     OSM(MOD_LSFT), KC_SCROLL_LOCK, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, NK_TOGG, OSM(MOD_HYPR), OSM(MOD_LCTL|MOD_LALT),
     TO(L_QWERTY), TO(L_SYM), TO(L_DVORAK), TO(L_MOUSE), TO(L_FN), QK_BOOT
   )
@@ -80,13 +87,15 @@ void oled_render_layer_state(void) {
     if (layer_state & (1 << L_LAYERNAV)) {
         oled_write_P(PSTR("LAYERNAV"), false);
     } else if (layer_state & (1 << L_FN)) {
-      oled_write_P(PSTR("FN"), false);
+        oled_write_P(PSTR("FN"), false);
     } else if (layer_state & (1 << L_SYM)) {
         oled_write_P(PSTR("SYM"), false);
     } else if (layer_state & (1 << L_MOUSE)) {
         oled_write_P(PSTR("MOUSE"), false);
-    } else if (layer_state & (1 <<  L_DVORAK)) {
+    } else if (layer_state & (1 << L_DVORAK)) {
         oled_write_P(PSTR("DVORAK"), false);
+    } else if (layer_state & (1 << L_VOICEOVER)) {
+        oled_write_P(PSTR("VO"), false);
     } else {
         oled_write_P(PSTR("QWERTY"), false);
     }
